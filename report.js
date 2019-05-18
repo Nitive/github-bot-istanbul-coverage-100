@@ -9,7 +9,6 @@ function formatNumber(num) {
   return (Math.floor(num * 100) / 100)
     .toFixed(2)
     .replace('-', '−')
-    .replace('.', ',')
 }
 
 function formatDiff(diff) {

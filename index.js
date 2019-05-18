@@ -41,9 +41,6 @@ async function run() {
     description: status.description,
     context: 'coverage',
   })
-
-  // eslint-disable-next-line no-console
-  // console.log(report)
 }
 
 run()
