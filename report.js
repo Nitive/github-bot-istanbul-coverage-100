@@ -71,6 +71,13 @@ exports.formatStatus = (reports) => {
   const { currentStats, diffs } = collectStats(reports)
   const diff = diffs.statements
 
+  if (diff === 0) {
+    return {
+      state: 'success',
+      description: `the same (${formatNumber(currentStats.statements)}%)`,
+    }
+  }
+
   if (diff < 0) {
     return {
       state: 'failure',
@@ -80,6 +87,6 @@ exports.formatStatus = (reports) => {
 
   return {
     state: 'success',
-    description: `${formatNumber(currentStats.statements)}% (${formatDiff(diffs.statements)}%)`,
+    description: `${formatNumber(diff)}% up (total ${formatNumber(currentStats.statements)}%)`,
   }
 }
