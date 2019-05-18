@@ -1,0 +1,1 @@
+# github-jest-coverage-bot
