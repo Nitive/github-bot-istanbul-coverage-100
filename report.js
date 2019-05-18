@@ -74,12 +74,12 @@ exports.formatStatus = (reports) => {
   if (diff < 0) {
     return {
       state: 'failure',
-      description: `${formatNumber(Math.abs(diff))}% down (total ${currentStats.statements}%)`,
+      description: `${formatNumber(Math.abs(diff))}% down (total ${formatNumber(currentStats.statements)}%)`,
     }
   }
 
   return {
     state: 'success',
-    description: `${currentStats.statements}% (${formatDiff(diffs.statements)}%)`,
+    description: `${formatNumber(currentStats.statements)}% (${formatDiff(diffs.statements)}%)`,
   }
 }
