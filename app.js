@@ -2,9 +2,9 @@ const { createApp } = require('./github')
 const { formatReport, formatStatus } = require('./report')
 
 
-async function addCoverageComment({ app, prNumber, report }) {
+async function addCoverageComment({ app, config, report }) {
   const { data: comments } = await app.request('GET /repos/:owner/:repo/issues/:issueNumber/comments', {
-    issueNumber: prNumber,
+    issueNumber: config.pullRequestNumber,
   })
 
   await Promise.all(comments.map(async (comment) => {
@@ -17,16 +17,33 @@ async function addCoverageComment({ app, prNumber, report }) {
 
 
   await app.request('POST /repos/:owner/:repo/issues/:issueNumber/comments', {
-    issueNumber: prNumber,
+    issueNumber: config.pullRequestNumber,
     body: formatReport(report),
   })
 }
 
+function createConfig({ env }) {
+  return {
+    isPR: env.TRAVIS_PULL_REQUEST !== 'false',
+    pullRequestNumber: env.TRAVIS_PULL_REQUEST,
+    commitSha: env.TRAVIS_COMMIT,
+    githubAppPrivateKey: env.GITHUB_APP_PRIVATE_KEY,
+  }
+}
+
 exports.run = async ({
-  prNumber, commitSha, report, octokit,
+  report, octokit, env,
 }) => {
+  const config = createConfig({ env })
+  if (!config.isPR) {
+    // eslint-disable-next-line no-console
+    console.log('Not a pull request. Exit')
+    return
+  }
+
   const app = await createApp({
     octokit,
+    config,
     owner: 'Nitive',
     repo: 'github-jest-coverage-bot',
   })
@@ -34,7 +51,7 @@ exports.run = async ({
 
   await app.request('POST /repos/:owner/:repo/check-runs', {
     name: 'coverage',
-    head_sha: commitSha,
+    head_sha: config.commitSha,
     status: 'completed',
     conclusion: status.conclusion,
     completed_at: new Date().toISOString(),
@@ -55,6 +72,6 @@ exports.run = async ({
   })
 
   if (status.conclusion !== 'success') {
-    await addCoverageComment({ app, prNumber, report })
+    await addCoverageComment({ app, config, report })
   }
 }

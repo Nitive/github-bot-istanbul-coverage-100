@@ -19,4 +19,7 @@ jobs:
 
     - name: "Jest"
       script:
-        - yarn unit
+        - yarn unit --coverageReporters=json-summary
+
+after_success:
+  yarn app

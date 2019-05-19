@@ -1,15 +1,21 @@
 /* eslint-disable global-require */
+const fs = require('fs')
+
 const App = require('@octokit/app')
 const { request } = require('@octokit/request')
 
 const { run } = require('./app')
 
+const env = {
+  GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY || fs.readFileSync('./private-key.pem'),
+  TRAVIS_PULL_REQUEST: process.env.TRAVIS_PULL_REQUEST,
+  TRAVIS_COMMIT: process.env.TRAVIS_COMMIT,
+}
+
 run({
-  env: {
-    prNumber: 1,
-    commitSha: '8addf6390e0d0be6543e64114eda2ae55282edd8',
-  },
-  report: require('./fixtures/coverage-summary.json'),
+  env,
+  // eslint-disable-next-line import/no-unresolved
+  report: require('./coverage/coverage-summary.json'),
   octokit: { App, request },
 })
   .catch(console.error) // eslint-disable-line no-console
