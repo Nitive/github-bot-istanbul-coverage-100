@@ -11,53 +11,39 @@ function formatNumber(num) {
     .replace('-', '−')
 }
 
-function formatDiff(diff) {
-  if (diff === 0) {
-    return 'unchanged'
-  }
-
-  if (diff > 0) {
-    return `+${formatNumber(diff)}`
-  }
-
-  return `${formatNumber(diff)}`
+function formatPct(pct) {
+  return pct === 100 ? '100.0%' : `${formatNumber(pct)}%`.padStart(6, ' ')
 }
 
-function collectStats({ prevReport, currentReport }) {
-  const prevStats = getStats(prevReport)
-  const currentStats = getStats(currentReport)
-  const diffs = R.mapObjIndexed((stat, statK) => stat - prevStats[statK], currentStats)
-
-  return { currentStats, diffs }
-}
-
-function isReportStatus({ diffs }) {
-  return Object.values(diffs).every(x => x >= 0) ? 'positive' : 'negative'
+function getReportStatus({ currentStats }) {
+  return Object.values(currentStats).every(x => x === 100) ? 'positive' : 'negative'
 }
 
 function capitalize(str) {
   return str[0].toUpperCase() + str.slice(1)
 }
 
-exports.formatReport = (reports) => {
-  const { currentStats, diffs } = collectStats(reports)
-  const reportStatus = isReportStatus({ diffs })
+exports.formatReport = (report) => {
+  const currentStats = getStats(report)
+  const reportStatus = getReportStatus({ currentStats })
+  if (reportStatus === 'positive') {
+    return undefined
+  }
+
   const icons = {
     positive: '💚',
     negative: '💔',
   }
 
-  const extraForNegative = (line, extra) => (reportStatus === 'negative' ? line + extra : line)
-  const row = type => extraForNegative(
-    `${capitalize(type)} | ${formatNumber(currentStats[type])}% | ${formatDiff(diffs[type])}%`,
-    ` | ${diffs[type] >= 0 ? icons.positive : icons.negative}`,
-  )
+  const getIcon = pct => (pct === 100 ? icons.positive : icons.negative)
+  const row = type => `${capitalize(type)} | ${getIcon(currentStats[type])} \`${formatPct(currentStats[type])}\``
 
   return [
     '<!-- commentType: "coverage-report" -->',
+    '### 💔 Coverage report',
     '',
-    extraForNegative('Type | Coverage | Difference', ' | '),
-    extraForNegative(':-|-:|-:', '|-'),
+    'Type | Coverage',
+    ':-|-:',
     row('statements'),
     row('branches'),
     row('functions'),
@@ -65,26 +51,19 @@ exports.formatReport = (reports) => {
   ].join('\n')
 }
 
-exports.formatStatus = (reports) => {
-  const { currentStats, diffs } = collectStats(reports)
-  const diff = diffs.statements
+exports.formatStatus = (report) => {
+  const currentStats = getStats(report)
+  const status = getReportStatus({ currentStats })
 
-  if (diff === 0) {
+  if (status === 'positive') {
     return {
-      state: 'success',
-      description: `💚 the same (${formatNumber(currentStats.statements)}%)`,
-    }
-  }
-
-  if (diff < 0) {
-    return {
-      state: 'neutral',
-      description: `💔 ${formatNumber(Math.abs(diff))}% down (total ${formatNumber(currentStats.statements)}%)`,
+      conclusion: 'success',
+      description: '💚 Everything is covered',
     }
   }
 
   return {
-    state: 'success',
-    description: `💚 ${formatNumber(diff)}% up (total ${formatNumber(currentStats.statements)}%)`,
+    conclusion: 'failure',
+    description: '💔 Coverage is below 100%',
   }
 }

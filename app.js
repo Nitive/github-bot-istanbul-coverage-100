@@ -1,49 +1,60 @@
-const fs = require('fs')
-const App = require('@octokit/app')
-const { request } = require('@octokit/request')
+const { createApp } = require('./github')
+const { formatReport, formatStatus } = require('./report')
 
 
-const APP_ID = 31009
-
-exports.createApp = async ({ owner, repo }) => {
-  const privateKey = fs.readFileSync('./private-key.pem', 'utf-8').trim()
-  const app = new App({
-    id: APP_ID,
-    privateKey,
+async function addCoverageComment({ app, prNumber, report }) {
+  const { data: comments } = await app.request('GET /repos/:owner/:repo/issues/:issueNumber/comments', {
+    issueNumber: prNumber,
   })
 
-  const jwt = app.getSignedJsonWebToken()
-
-  const { data: { id: installationId } } = await request('GET /repos/:owner/:repo/installation', {
-    owner,
-    repo,
-    headers: {
-      authorization: `Bearer ${jwt}`,
-      accept: 'application/vnd.github.machine-man-preview+json',
-    },
-  })
-
-  // contains the installation id necessary to authenticate as an installation
-  const installationAccessToken = await app.getInstallationAccessToken({ installationId })
-
-
-  return {
-    request(req, query) {
-      if (process.env.DEBUG_HTTP) {
-        // eslint-disable-next-line no-console
-        console.log(req, query)
-      }
-
-      return request(req, {
-        owner,
-        repo,
-        ...query,
-        headers: {
-          authorization: `token ${installationAccessToken}`,
-          accept: 'application/vnd.github.machine-man-preview+json',
-          ...query.headers,
-        },
+  await Promise.all(comments.map(async (comment) => {
+    if (comment.body.includes('commentType: "coverage-report"')) {
+      await app.request('DELETE /repos/:owner/:repo/issues/comments/:commentId', {
+        commentId: comment.id,
       })
+    }
+  }))
+
+
+  await app.request('POST /repos/:owner/:repo/issues/:issueNumber/comments', {
+    issueNumber: prNumber,
+    body: formatReport(report),
+  })
+}
+
+exports.run = async ({
+  prNumber, commitSha, report, octokit,
+}) => {
+  const app = await createApp({
+    octokit,
+    owner: 'Nitive',
+    repo: 'github-jest-coverage-bot',
+  })
+  const status = formatStatus(report)
+
+  await app.request('POST /repos/:owner/:repo/check-runs', {
+    name: 'coverage',
+    head_sha: commitSha,
+    status: 'completed',
+    conclusion: status.conclusion,
+    completed_at: new Date().toISOString(),
+    output: {
+      title: status.description,
+      summary: formatReport(report),
+      annotations: [{
+        path: 'README.md',
+        start_line: 1,
+        end_line: 1,
+        annotation_level: 'warning',
+        message: 'Line is not covered',
+      }],
     },
+    headers: {
+      Accept: 'application/vnd.github.antiope-preview+json',
+    },
+  })
+
+  if (status.conclusion !== 'success') {
+    await addCoverageComment({ app, prNumber, report })
   }
 }
