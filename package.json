@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "unit": "jest --all --coverage"
+    "unit": "jest --all --coverage",
+    "app": "node ./bin"
   },
   "license": "MIT",
   "dependencies": {
