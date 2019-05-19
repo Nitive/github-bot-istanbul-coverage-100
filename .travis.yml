@@ -1,0 +1,22 @@
+language: node_js
+
+node_js:
+  - "8.10"
+
+sudo: false
+
+install:
+  - yarn
+
+cache:
+  yarn: true
+
+jobs:
+  include:
+    - name: "Lint CSS & JS"
+      script:
+        - yarn lint
+
+    - name: "Jest"
+      script:
+        - yarn unit
