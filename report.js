@@ -55,7 +55,6 @@ exports.formatReport = (reports) => {
 
   return [
     '<!-- commentType: "coverage-report" -->',
-    `### ${icons[reportStatus]} Coverage report`,
     '',
     extraForNegative('Type | Coverage | Difference', ' | '),
     extraForNegative(':-|-:|-:', '|-'),
@@ -73,19 +72,19 @@ exports.formatStatus = (reports) => {
   if (diff === 0) {
     return {
       state: 'success',
-      description: `the same (${formatNumber(currentStats.statements)}%)`,
+      description: `💚 the same (${formatNumber(currentStats.statements)}%)`,
     }
   }
 
   if (diff < 0) {
     return {
-      state: 'failure',
-      description: `${formatNumber(Math.abs(diff))}% down (total ${formatNumber(currentStats.statements)}%)`,
+      state: 'neutral',
+      description: `💔 ${formatNumber(Math.abs(diff))}% down (total ${formatNumber(currentStats.statements)}%)`,
     }
   }
 
   return {
     state: 'success',
-    description: `${formatNumber(diff)}% up (total ${formatNumber(currentStats.statements)}%)`,
+    description: `💚 ${formatNumber(diff)}% up (total ${formatNumber(currentStats.statements)}%)`,
   }
 }
