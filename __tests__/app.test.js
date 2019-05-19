@@ -11,8 +11,8 @@ describe('App', () => {
     await run({
       octokit,
       env: {
-        prNumber: 1,
-        commitSha: '8addf6390e0d0be6543e64114eda2ae55282edd8',
+        TRAVIS_PULL_REQUEST: '0',
+        TRAVIS_PULL_REQUEST_SHA: 'sha',
       },
       report: {
         total: {
