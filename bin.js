@@ -1,4 +1,6 @@
+/* istanbul ignore file */
 /* eslint-disable global-require */
+
 const fs = require('fs')
 const { execSync } = require('child_process')
 
