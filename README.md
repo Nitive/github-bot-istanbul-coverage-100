@@ -1,0 +1,1 @@
+# Github Jest Coverage Bot
