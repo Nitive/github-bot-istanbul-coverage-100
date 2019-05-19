@@ -64,6 +64,6 @@ exports.formatStatus = (report) => {
 
   return {
     conclusion: 'failure',
-    description: '💔 Coverage is below 100%',
+    description: '💔 below 100%',
   }
 }
