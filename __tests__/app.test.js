@@ -38,4 +38,36 @@ describe('App', () => {
       },
     })
   })
+
+  it('should set success check when coverage is 100%', async () => {
+    expect.assertions(3)
+
+    await run({
+      octokit: octokit.extend('POST /repos/:owner/:repo/check-runs', (result) => {
+        expect(result).toMatchObject({
+          name: 'Coverage',
+          conclusion: 'success',
+          status: 'completed',
+        })
+        expect(result.output).toMatchObject({
+          title: '💚 Everything is covered',
+        })
+        expect(result.output.summary).toMatchSnapshot()
+
+        return Promise.resolve()
+      }),
+      env: {
+        TRAVIS_PULL_REQUEST: '0',
+        TRAVIS_PULL_REQUEST_SHA: 'sha',
+      },
+      report: {
+        total: {
+          lines: { pct: 100 },
+          statements: { pct: 100 },
+          functions: { pct: 100 },
+          branches: { pct: 100 },
+        },
+      },
+    })
+  })
 })

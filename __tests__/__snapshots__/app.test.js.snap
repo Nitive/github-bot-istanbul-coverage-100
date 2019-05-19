@@ -11,3 +11,15 @@ Branches | 💔 \`93.75%\`
 Functions | 💔 \`76.83%\`
 Lines | 💔 \`92.61%\`"
 `;
+
+exports[`App should set success check when coverage is 100% 1`] = `
+"<!-- commentType: \\"coverage-report\\" -->
+### 💚 Coverage report
+
+Type | Coverage
+:-|-:
+Statements | 💚 \`100.0%\`
+Branches | 💚 \`100.0%\`
+Functions | 💚 \`100.0%\`
+Lines | 💚 \`100.0%\`"
+`;

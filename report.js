@@ -25,10 +25,6 @@ function capitalize(str) {
 
 exports.formatReport = (report) => {
   const currentStats = getStats(report)
-  const reportStatus = getReportStatus({ currentStats })
-  if (reportStatus === 'positive') {
-    return undefined
-  }
 
   const icons = {
     positive: '💚',
@@ -40,7 +36,7 @@ exports.formatReport = (report) => {
 
   return [
     '<!-- commentType: "coverage-report" -->',
-    '### 💔 Coverage report',
+    `### ${icons[getReportStatus({ currentStats })]} Coverage report`,
     '',
     'Type | Coverage',
     ':-|-:',
