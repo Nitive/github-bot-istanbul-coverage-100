@@ -1,1 +1,1 @@
-# github-jest-coverage-bot
+# Github Jest Coverage Bot
