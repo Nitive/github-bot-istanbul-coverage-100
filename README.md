@@ -1,1 +1,1 @@
-# Github Jest Coverage Bot
+# Github Bot Istanbul Coverage 100
