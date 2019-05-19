@@ -24,7 +24,7 @@ async function addCoverageComment({ app, config, report }) {
 
 function createConfig({ env }) {
   return {
-    isPR: env.TRAVIS_PULL_REQUEST !== 'false',
+    isPR: Boolean(env.TRAVIS_PULL_REQUEST && env.TRAVIS_PULL_REQUEST !== 'false'),
     pullRequestNumber: env.TRAVIS_PULL_REQUEST,
     commitSha: env.TRAVIS_COMMIT,
     githubAppPrivateKey: env.GITHUB_APP_PRIVATE_KEY,
