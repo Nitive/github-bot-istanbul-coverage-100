@@ -26,7 +26,7 @@ function createConfig({ env }) {
   return {
     isPR: Boolean(env.TRAVIS_PULL_REQUEST && env.TRAVIS_PULL_REQUEST !== 'false'),
     pullRequestNumber: env.TRAVIS_PULL_REQUEST,
-    commitSha: env.TRAVIS_COMMIT,
+    commitSha: env.TRAVIS_PULL_REQUEST_SHA,
     githubAppPrivateKey: env.GITHUB_APP_PRIVATE_KEY,
   }
 }
