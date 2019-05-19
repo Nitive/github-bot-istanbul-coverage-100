@@ -50,7 +50,7 @@ exports.run = async ({
   const status = formatStatus(report)
 
   await app.request('POST /repos/:owner/:repo/check-runs', {
-    name: 'coverage',
+    name: 'Coverage',
     head_sha: config.commitSha,
     status: 'completed',
     conclusion: status.conclusion,
