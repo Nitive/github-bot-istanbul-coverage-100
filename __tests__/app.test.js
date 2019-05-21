@@ -35,6 +35,10 @@ const reports = [
   goodCoverageReport,
 ]
 
+async function every(data, check) {
+  await Promise.all(data.map(check))
+}
+
 describe('App', () => {
   it('should set failed check when coverage is below 100%', async () => {
     expect.assertions(3)
@@ -96,7 +100,7 @@ describe('App', () => {
   })
 
   it('should remove previous coverage comments', async () => {
-    await Promise.all(reports.map(async (report) => {
+    await every(reports, async (report) => {
       const test = jest.fn()
 
       await run({
@@ -118,7 +122,7 @@ describe('App', () => {
       expect(test).toHaveBeenCalledWith(1)
       expect(test).toHaveBeenCalledWith(2)
       expect(test).toHaveBeenCalledTimes(2)
-    }))
+    })
   })
 
   it('should leave comment when coverage is below 100%', async () => {
@@ -131,6 +135,23 @@ describe('App', () => {
       }),
       env,
       report: badCoverageReport,
+    })
+  })
+
+  it('should exit with message when executed not inside PR', async () => {
+    await every(reports, async (report) => {
+      await every(['false', ''], async (TRAVIS_PULL_REQUEST) => {
+        const effects = await run({
+          octokit,
+          env: {
+            ...env,
+            TRAVIS_PULL_REQUEST,
+          },
+          report,
+        })
+
+        expect(effects.log).toEqual(['Not a pull request. Exit'])
+      })
     })
   })
 })

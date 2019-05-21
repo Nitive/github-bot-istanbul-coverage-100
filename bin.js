@@ -21,4 +21,10 @@ run({
   report: require('./coverage/coverage-summary.json'),
   octokit: { App, request },
 })
+  .then((effects) => {
+    (effects.log || []).forEach((message) => {
+      // eslint-disable-next-line no-console
+      console.log(message)
+    })
+  })
   .catch(console.error) // eslint-disable-line no-console

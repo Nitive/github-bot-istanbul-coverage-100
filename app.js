@@ -36,9 +36,9 @@ exports.run = async ({
 }) => {
   const config = createConfig({ env })
   if (!config.isPR) {
-    // eslint-disable-next-line no-console
-    console.log('Not a pull request. Exit')
-    return
+    return Promise.resolve({
+      log: ['Not a pull request. Exit'],
+    })
   }
 
   const app = await createApp({
@@ -75,4 +75,6 @@ exports.run = async ({
   if (status.conclusion !== 'success') {
     await addCoverageComment({ app, config, report })
   }
+
+  return {}
 }
