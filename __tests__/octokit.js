@@ -1,3 +1,5 @@
+// istanbul ignore file
+
 class FakeApp {
   // eslint-disable-next-line class-methods-use-this
   getSignedJsonWebToken() {
@@ -13,9 +15,9 @@ class FakeApp {
 
 const defaultFakeRequest = req => Promise.reject(new Error(`Request ${req} is not mocked`))
 function createFakeRequest(fakeRequest = defaultFakeRequest) {
-  const xFakeRequest = (req, options) => fakeRequest(req, options)
+  const extandableFakeRequest = (req, options) => fakeRequest(req, options)
 
-  xFakeRequest.extend = (newReq, response) => {
+  extandableFakeRequest.extend = (newReq, response) => {
     const newFakeRequest = (req, options) => {
       if (req === newReq) {
         return response(options)
@@ -26,7 +28,7 @@ function createFakeRequest(fakeRequest = defaultFakeRequest) {
     return createFakeRequest(newFakeRequest)
   }
 
-  return xFakeRequest
+  return extandableFakeRequest
 }
 
 const defaultRequest = createFakeRequest()
