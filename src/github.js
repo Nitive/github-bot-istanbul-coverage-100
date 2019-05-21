@@ -1,12 +1,9 @@
-const APP_ID = 31009
-
 exports.createApp = async ({
   owner, repo, octokit, config,
 }) => {
-  const privateKey = config.githubAppPrivateKey
   const app = new octokit.App({
-    id: APP_ID,
-    privateKey,
+    id: config.githubAppId,
+    privateKey: config.githubAppPrivateKey,
   })
 
   const jwt = app.getSignedJsonWebToken()

@@ -10,6 +10,7 @@ const octokit = baseOctokit
 const env = {
   TRAVIS_PULL_REQUEST: '1',
   TRAVIS_PULL_REQUEST_SHA: 'sha',
+  TRAVIS_PULL_REQUEST_SLUG: 'owner/repo',
 }
 
 const badCoverageReport = {
