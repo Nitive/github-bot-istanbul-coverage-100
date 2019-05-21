@@ -1,7 +1,9 @@
-const R = require('ramda')
-
 function getStats(coverage) {
-  return R.map(obj => obj.pct, coverage.total)
+  const total = {}
+  Object.keys(coverage.total).forEach((key) => {
+    total[key] = coverage.total[key].pct
+  })
+  return total
 }
 
 
