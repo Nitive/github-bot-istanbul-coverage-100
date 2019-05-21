@@ -285,10 +285,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
-"@octokit/app@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@octokit/app/-/app-2.2.4.tgz#5104696b7acde1a8310fd8f14106fb2805b2900a"
-  integrity sha512-f/DCK0d3o0qv/RXQUirQEhN91uUS8QRRxPg7vYvEei0TZh+M6SYGy8ZAa4e0gN9zo7T8K0rD99jwE64nV5lzyA==
+"@octokit/app@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@octokit/app/-/app-2.2.5.tgz#2cdd1eed763a822ed5cd0ffcf38fbdd0d40acbf9"
+  integrity sha512-WIvIVzZItDWSvnkleA6e5wmNBqH4dfzFZsB5GV0QWiMNAOT7TjecVcB6Uz6GhQvfuV4rmjY3/al3akWNNuPLmg==
   dependencies:
     "@octokit/request" "^3.0.0"
     "@types/lru-cache" "^5.1.0"
@@ -1143,7 +1143,7 @@ eslint-module-utils@^2.4.0:
     debug "^2.6.8"
     pkg-dir "^2.0.0"
 
-eslint-plugin-import@^2.14.0:
+eslint-plugin-import@^2.17.2:
   version "2.17.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.17.2.tgz#d227d5c6dc67eca71eb590d2bb62fb38d86e9fcb"
   integrity sha512-m+cSVxM7oLsIpmwNn2WXTJoReOF9f/CtLMo7qOVmKd1KntBy0hEcuNZ3erTmWjx+DxRO0Zcrm5KwAvI9wHcV5g==
