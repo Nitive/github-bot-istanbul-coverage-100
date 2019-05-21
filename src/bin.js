@@ -17,6 +17,7 @@ const env = {
   GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY || fs.readFileSync('./private-key.pem'),
   TRAVIS_PULL_REQUEST: process.env.TRAVIS_PULL_REQUEST,
   TRAVIS_PULL_REQUEST_SHA: process.env.TRAVIS_PULL_REQUEST_SHA || execSync('git rev-parse HEAD || true', { encoding: 'utf8' }).trim(),
+  TRAVIS_PULL_REQUEST_SLUG: process.env.TRAVIS_PULL_REQUEST_SLUG,
 }
 
 const reportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-summary.json')
