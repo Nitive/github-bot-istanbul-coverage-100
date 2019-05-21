@@ -45,7 +45,7 @@ exports.run = async ({
     octokit,
     config,
     owner: 'Nitive',
-    repo: 'github-jest-coverage-bot',
+    repo: 'github-bot-istanbul-coverage-100',
   })
   const status = formatStatus(report)
 

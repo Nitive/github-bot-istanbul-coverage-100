@@ -8,7 +8,7 @@ const octokit = baseOctokit
   .extend('DELETE /repos/:owner/:repo/issues/comments/:commentId', () => Promise.resolve())
 
 const env = {
-  TRAVIS_PULL_REQUEST: '0',
+  TRAVIS_PULL_REQUEST: '1',
   TRAVIS_PULL_REQUEST_SHA: 'sha',
 }
 
@@ -119,5 +119,18 @@ describe('App', () => {
       expect(test).toHaveBeenCalledWith(2)
       expect(test).toHaveBeenCalledTimes(2)
     }))
+  })
+
+  it('should leave comment when coverage is below 100%', async () => {
+    expect.assertions(1)
+
+    await run({
+      octokit: octokit.extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', (data) => {
+        expect(data).toMatchSnapshot()
+        return Promise.resolve()
+      }),
+      env,
+      report: badCoverageReport,
+    })
   })
 })
