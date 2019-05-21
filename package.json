@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "main": "index.js",
   "bin": {
-    "github-bot-istanbul-coverage-100": "./bin.js"
+    "github-bot-istanbul-coverage-100": "./node/bin.js"
   },
   "scripts": {
     "lint": "eslint .",
     "unit": "jest --all --coverage",
-    "app": "node ./bin"
+    "app": "node ./src/bin"
   },
   "license": "MIT",
   "dependencies": {
