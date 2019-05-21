@@ -6,6 +6,29 @@ const octokit = baseOctokit
   .extend('GET /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve({ data: [] }))
   .extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve())
 
+const env = {
+  TRAVIS_PULL_REQUEST: '0',
+  TRAVIS_PULL_REQUEST_SHA: 'sha',
+}
+
+const badCoverageReport = {
+  total: {
+    lines: { pct: 92.61 },
+    statements: { pct: 91.99 },
+    functions: { pct: 76.83 },
+    branches: { pct: 93.75 },
+  },
+}
+
+const goodCoverageReport = {
+  total: {
+    lines: { pct: 100 },
+    statements: { pct: 100 },
+    functions: { pct: 100 },
+    branches: { pct: 100 },
+  },
+}
+
 describe('App', () => {
   it('should set failed check when coverage is below 100%', async () => {
     expect.assertions(3)
@@ -24,18 +47,8 @@ describe('App', () => {
 
         return Promise.resolve()
       }),
-      env: {
-        TRAVIS_PULL_REQUEST: '0',
-        TRAVIS_PULL_REQUEST_SHA: 'sha',
-      },
-      report: {
-        total: {
-          lines: { pct: 92.61 },
-          statements: { pct: 91.99 },
-          functions: { pct: 76.83 },
-          branches: { pct: 93.75 },
-        },
-      },
+      env,
+      report: badCoverageReport,
     })
   })
 
@@ -56,18 +69,23 @@ describe('App', () => {
 
         return Promise.resolve()
       }),
-      env: {
-        TRAVIS_PULL_REQUEST: '0',
-        TRAVIS_PULL_REQUEST_SHA: 'sha',
-      },
-      report: {
-        total: {
-          lines: { pct: 100 },
-          statements: { pct: 100 },
-          functions: { pct: 100 },
-          branches: { pct: 100 },
-        },
-      },
+      env,
+      report: goodCoverageReport,
     })
+  })
+
+  it('should not leave comment when coverage is 100%', async () => {
+    const createComment = jest.fn()
+
+    await run({
+      octokit: octokit.extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', () => {
+        createComment()
+        return Promise.resolve()
+      }),
+      env,
+      report: goodCoverageReport,
+    })
+
+    expect(createComment).not.toHaveBeenCalled()
   })
 })
