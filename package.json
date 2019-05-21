@@ -1,7 +1,10 @@
 {
-  "name": "github-coverage-bot",
-  "version": "1.0.0",
+  "name": "github-bot-istanbul-coverage-100",
+  "version": "0.1.0",
   "main": "index.js",
+  "bin": {
+    "github-bot-istanbul-coverage-100": "./bin.js"
+  },
   "scripts": {
     "lint": "eslint .",
     "unit": "jest --all --coverage",

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /* istanbul ignore file */
 /* eslint-disable global-require */
 
