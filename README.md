@@ -1,4 +1,4 @@
-# Istanbul Coverage 100
+# Istanbul Coverage 100 [![Build Status](https://travis-ci.com/Nitive/github-bot-istanbul-coverage-100.svg?branch=master)](https://travis-ci.com/Nitive/github-bot-istanbul-coverage-100)
 
 Github bot to ensure that your app have 100% coverage. It checks your coverage report and creates checks in pull requests, send coverage comments and annotate uncovered lines of code.
 
