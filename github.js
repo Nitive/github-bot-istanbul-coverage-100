@@ -25,11 +25,6 @@ exports.createApp = async ({
 
   return {
     request(req, query) {
-      if (process.env.DEBUG_HTTP) {
-        // eslint-disable-next-line no-console
-        console.log(req, query)
-      }
-
       return octokit.request(req, {
         owner,
         repo,
