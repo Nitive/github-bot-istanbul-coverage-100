@@ -1,8 +1,7 @@
 const { createApp } = require('./github')
 const { formatReport, formatStatus } = require('./report')
 
-
-async function addCoverageComment({ app, config, report }) {
+async function removeCoverageComments({ app, config }) {
   const { data: comments } = await app.request('GET /repos/:owner/:repo/issues/:issueNumber/comments', {
     issueNumber: config.pullRequestNumber,
   })
@@ -14,8 +13,9 @@ async function addCoverageComment({ app, config, report }) {
       })
     }
   }))
+}
 
-
+async function addCoverageComment({ app, config, report }) {
   await app.request('POST /repos/:owner/:repo/issues/:issueNumber/comments', {
     issueNumber: config.pullRequestNumber,
     body: formatReport(report),
@@ -71,6 +71,7 @@ exports.run = async ({
     },
   })
 
+  await removeCoverageComments({ app, config })
   if (status.conclusion !== 'success') {
     await addCoverageComment({ app, config, report })
   }

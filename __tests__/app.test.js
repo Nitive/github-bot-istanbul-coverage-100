@@ -5,6 +5,7 @@ const octokit = baseOctokit
   .extend('POST /repos/:owner/:repo/check-runs', () => Promise.resolve())
   .extend('GET /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve({ data: [] }))
   .extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve())
+  .extend('DELETE /repos/:owner/:repo/issues/comments/:commentId', () => Promise.resolve())
 
 const env = {
   TRAVIS_PULL_REQUEST: '0',
@@ -28,6 +29,11 @@ const goodCoverageReport = {
     branches: { pct: 100 },
   },
 }
+
+const reports = [
+  badCoverageReport,
+  goodCoverageReport,
+]
 
 describe('App', () => {
   it('should set failed check when coverage is below 100%', async () => {
@@ -87,5 +93,31 @@ describe('App', () => {
     })
 
     expect(createComment).not.toHaveBeenCalled()
+  })
+
+  it('should remove previous coverage comments', async () => {
+    await Promise.all(reports.map(async (report) => {
+      const test = jest.fn()
+
+      await run({
+        octokit: octokit
+          .extend('GET /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve({
+            data: [
+              { id: 1, body: '<!-- commentType: "coverage-report" -->\n comment 1' },
+              { id: 2, body: '<!-- commentType: "coverage-report" -->\n comment 2' },
+            ],
+          }))
+          .extend('DELETE /repos/:owner/:repo/issues/comments/:commentId', (data) => {
+            test(data.commentId)
+            return Promise.resolve()
+          }),
+        env,
+        report,
+      })
+
+      expect(test).toHaveBeenCalledWith(1)
+      expect(test).toHaveBeenCalledWith(2)
+      expect(test).toHaveBeenCalledTimes(2)
+    }))
   })
 })
