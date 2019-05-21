@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "main": "index.js",
   "bin": {
-    "github-bot-istanbul-coverage-100": "./node/bin.js"
+    "github-bot-istanbul-coverage-100": "./src/bin.js"
   },
   "scripts": {
     "lint": "eslint .",
