@@ -10,6 +10,10 @@
     "unit": "jest --all --coverage",
     "app": "node ./src/bin"
   },
+  "files": [
+    "src",
+    "!__tests__"
+  ],
   "license": "MIT",
   "dependencies": {
     "@octokit/app": "^2.2.5",
