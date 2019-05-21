@@ -21,6 +21,27 @@ Lines | 💔 \`92.61%\`",
 }
 `;
 
+exports[`App should leave comment when coverage is below 100% 2`] = `
+Object {
+  "body": "<!-- commentType: \\"coverage-report\\" -->
+### 💔 Coverage report
+
+Type | Coverage
+:-|-:
+Statements | 💚 \`100.0%\`
+Branches | 💚 \`100.0%\`
+Functions | 💔 \`80.00%\`
+Lines | 💔 \`95.00%\`",
+  "headers": Object {
+    "accept": "application/vnd.github.machine-man-preview+json",
+    "authorization": "token installation-token",
+  },
+  "issueNumber": "1",
+  "owner": "Nitive",
+  "repo": "github-bot-istanbul-coverage-100",
+}
+`;
+
 exports[`App should set failed check when coverage is below 100% 1`] = `
 "<!-- commentType: \\"coverage-report\\" -->
 ### 💔 Coverage report
