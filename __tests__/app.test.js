@@ -30,8 +30,18 @@ const goodCoverageReport = {
   },
 }
 
+const mixedCoverageReport = {
+  total: {
+    lines: { pct: 95 },
+    statements: { pct: 100 },
+    functions: { pct: 80 },
+    branches: { pct: 100 },
+  },
+}
+
 const reports = [
   badCoverageReport,
+  mixedCoverageReport,
   goodCoverageReport,
 ]
 
@@ -125,16 +135,46 @@ describe('App', () => {
     })
   })
 
-  it('should leave comment when coverage is below 100%', async () => {
-    expect.assertions(1)
+  it('should not remove comments only with commentType: "coverage-report"', async () => {
+    await every(reports, async (report) => {
+      const test = jest.fn()
 
-    await run({
-      octokit: octokit.extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', (data) => {
-        expect(data).toMatchSnapshot()
-        return Promise.resolve()
-      }),
-      env,
-      report: badCoverageReport,
+      await run({
+        octokit: octokit
+          .extend('GET /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve({
+            data: [
+              { id: 1, body: '<!-- commentType: "coverage-report" -->\n comment 1' },
+              { id: 2, body: '<!-- commentType: "another type" -->\n comment 2' },
+              { id: 3, body: 'just regular comment' },
+            ],
+          }))
+          .extend('DELETE /repos/:owner/:repo/issues/comments/:commentId', (data) => {
+            test(data.commentId)
+            return Promise.resolve()
+          }),
+        env,
+        report,
+      })
+
+      expect(test).toHaveBeenCalledWith(1)
+      expect(test).not.toHaveBeenCalledWith(2)
+      expect(test).not.toHaveBeenCalledWith(3)
+      expect(test).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('should leave comment when coverage is below 100%', async () => {
+    expect.assertions(2)
+
+    await every(reports, async (report) => {
+      await run({
+        octokit: octokit.extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', (data) => {
+          expect(data).toMatchSnapshot()
+          return Promise.resolve()
+        }),
+        env,
+        report,
+      })
     })
   })
 
