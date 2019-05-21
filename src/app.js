@@ -24,6 +24,7 @@ async function addCoverageComment({ app, config, report }) {
 
 function createConfig({ env }) {
   const [owner, repo] = env.TRAVIS_PULL_REQUEST_SLUG.split('/')
+
   return {
     isPR: Boolean(env.TRAVIS_PULL_REQUEST && env.TRAVIS_PULL_REQUEST !== 'false'),
     pullRequestNumber: env.TRAVIS_PULL_REQUEST,
