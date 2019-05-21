@@ -4,6 +4,7 @@
 /* eslint-disable global-require */
 
 const fs = require('fs')
+const path = require('path')
 const { execSync } = require('child_process')
 
 const App = require('@octokit/app')
@@ -18,10 +19,12 @@ const env = {
   TRAVIS_PULL_REQUEST_SHA: process.env.TRAVIS_PULL_REQUEST_SHA || execSync('git rev-parse HEAD || true', { encoding: 'utf8' }).trim(),
 }
 
+const reportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-summary.json')
+
 run({
   env,
-  // eslint-disable-next-line import/no-unresolved
-  report: require('./coverage/coverage-summary.json'),
+  // eslint-disable-next-line import/no-dynamic-require
+  report: require(reportPath),
   octokit: { App, request },
 })
   .then((effects) => {
