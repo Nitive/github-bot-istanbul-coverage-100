@@ -4,7 +4,7 @@ Github bot to ensure that your app have 100% coverage. It checks your coverage r
 
 ## Get started
 1. Create github app
-1. Set env variables GITHUB_APP_ID and GITHUB_APP_PRIVATE_KEY in travis
+1. Set env variables `GITHUB_APP_ID` and `GITHUB_APP_PRIVATE_KEY` in travis
 1. Install `github-bot-istanbul-coverage-100` as dev dependency
 1. Add `--coverage` flag to `jest` to collect coverage on CI
 1. Add `json-summary` to coverage reporters
