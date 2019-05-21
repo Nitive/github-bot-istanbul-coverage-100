@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`App should leave comment when coverage is below 100% 1`] = `
+Object {
+  "body": "<!-- commentType: \\"coverage-report\\" -->
+### 💔 Coverage report
+
+Type | Coverage
+:-|-:
+Statements | 💔 \`91.99%\`
+Branches | 💔 \`93.75%\`
+Functions | 💔 \`76.83%\`
+Lines | 💔 \`92.61%\`",
+  "headers": Object {
+    "accept": "application/vnd.github.machine-man-preview+json",
+    "authorization": "token installation-token",
+  },
+  "issueNumber": "1",
+  "owner": "Nitive",
+  "repo": "github-bot-istanbul-coverage-100",
+}
+`;
+
 exports[`App should set failed check when coverage is below 100% 1`] = `
 "<!-- commentType: \\"coverage-report\\" -->
 ### 💔 Coverage report
