@@ -16,8 +16,8 @@ Lines | 💔 \`92.61%\`",
     "authorization": "token installation-token",
   },
   "issueNumber": "1",
-  "owner": "Nitive",
-  "repo": "github-bot-istanbul-coverage-100",
+  "owner": "owner",
+  "repo": "repo",
 }
 `;
 
@@ -37,8 +37,8 @@ Lines | 💔 \`95.00%\`",
     "authorization": "token installation-token",
   },
   "issueNumber": "1",
-  "owner": "Nitive",
-  "repo": "github-bot-istanbul-coverage-100",
+  "owner": "owner",
+  "repo": "repo",
 }
 `;
 

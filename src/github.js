@@ -1,6 +1,4 @@
-exports.createApp = async ({
-  owner, repo, octokit, config,
-}) => {
+exports.createApp = async ({ octokit, config }) => {
   const app = new octokit.App({
     id: config.githubAppId,
     privateKey: config.githubAppPrivateKey,
@@ -9,8 +7,8 @@ exports.createApp = async ({
   const jwt = app.getSignedJsonWebToken()
 
   const { data: { id: installationId } } = await octokit.request('GET /repos/:owner/:repo/installation', {
-    owner,
-    repo,
+    owner: config.owner,
+    repo: config.repo,
     headers: {
       authorization: `Bearer ${jwt}`,
       accept: 'application/vnd.github.machine-man-preview+json',
@@ -23,8 +21,8 @@ exports.createApp = async ({
   return {
     request(req, query) {
       return octokit.request(req, {
-        owner,
-        repo,
+        owner: config.owner,
+        repo: config.repo,
         ...query,
         headers: {
           authorization: `token ${installationAccessToken}`,

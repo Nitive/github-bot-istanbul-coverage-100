@@ -49,8 +49,6 @@ exports.run = async ({
   const app = await createApp({
     octokit,
     config,
-    owner: 'Nitive',
-    repo: 'github-bot-istanbul-coverage-100',
   })
   const status = formatStatus(report)
 
