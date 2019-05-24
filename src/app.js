@@ -38,6 +38,10 @@ function createConfig({ env }) {
   }
 }
 
+function uncovered() {
+  console.log('this is uncovered line')
+}
+
 exports.run = async ({
   summaryReport, octokit, env, coverageReport,
 }) => {
@@ -46,6 +50,10 @@ exports.run = async ({
     return Promise.resolve({
       log: ['Not a pull request. Exit'],
     })
+  }
+
+  if (config.repo === 'test') {
+    uncovered()
   }
 
   const annotations = coverageReport
