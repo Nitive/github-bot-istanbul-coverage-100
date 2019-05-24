@@ -20,12 +20,12 @@ const env = {
   TRAVIS_PULL_REQUEST_SLUG: process.env.TRAVIS_PULL_REQUEST_SLUG,
 }
 
-const reportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-summary.json')
+const summaryReportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-summary.json')
 
 run({
   env,
   // eslint-disable-next-line import/no-dynamic-require
-  report: require(reportPath),
+  summaryReport: require(summaryReportPath),
   octokit: { App, request },
 })
   .then((effects) => {

@@ -15,10 +15,10 @@ async function removeCoverageComments({ app, config }) {
   }))
 }
 
-async function addCoverageComment({ app, config, report }) {
+async function addCoverageComment({ app, config, summaryReport }) {
   await app.request('POST /repos/:owner/:repo/issues/:issueNumber/comments', {
     issueNumber: config.pullRequestNumber,
-    body: formatReport(report),
+    body: formatReport(summaryReport),
   })
 }
 
@@ -37,7 +37,7 @@ function createConfig({ env }) {
 }
 
 exports.run = async ({
-  report, octokit, env,
+  summaryReport, octokit, env,
 }) => {
   const config = createConfig({ env })
   if (!config.isPR) {
@@ -50,7 +50,7 @@ exports.run = async ({
     octokit,
     config,
   })
-  const status = formatStatus(report)
+  const status = formatStatus(summaryReport)
 
   await app.request('POST /repos/:owner/:repo/check-runs', {
     name: 'Coverage',
@@ -60,7 +60,7 @@ exports.run = async ({
     completed_at: new Date().toISOString(),
     output: {
       title: status.description,
-      summary: formatReport(report),
+      summary: formatReport(summaryReport),
       // annotations: [{
       //   path: 'README.md',
       //   start_line: 1,
@@ -76,7 +76,7 @@ exports.run = async ({
 
   await removeCoverageComments({ app, config })
   if (status.conclusion !== 'success') {
-    await addCoverageComment({ app, config, report })
+    await addCoverageComment({ app, config, summaryReport })
   }
 
   return {}

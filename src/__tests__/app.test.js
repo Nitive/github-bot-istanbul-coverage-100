@@ -13,7 +13,7 @@ const env = {
   TRAVIS_PULL_REQUEST_SLUG: 'owner/repo',
 }
 
-const badCoverageReport = {
+const badSummary = {
   total: {
     lines: { pct: 92.61 },
     statements: { pct: 91.99 },
@@ -22,7 +22,7 @@ const badCoverageReport = {
   },
 }
 
-const goodCoverageReport = {
+const goodSummary = {
   total: {
     lines: { pct: 100 },
     statements: { pct: 100 },
@@ -31,7 +31,7 @@ const goodCoverageReport = {
   },
 }
 
-const mixedCoverageReport = {
+const mixedSummary = {
   total: {
     lines: { pct: 95 },
     statements: { pct: 100 },
@@ -40,10 +40,10 @@ const mixedCoverageReport = {
   },
 }
 
-const reports = [
-  badCoverageReport,
-  mixedCoverageReport,
-  goodCoverageReport,
+const summaryReports = [
+  badSummary,
+  mixedSummary,
+  goodSummary,
 ]
 
 async function every(data, check) {
@@ -69,7 +69,7 @@ describe('App', () => {
         return Promise.resolve()
       }),
       env,
-      report: badCoverageReport,
+      summaryReport: badSummary,
     })
   })
 
@@ -91,7 +91,7 @@ describe('App', () => {
         return Promise.resolve()
       }),
       env,
-      report: goodCoverageReport,
+      summaryReport: goodSummary,
     })
   })
 
@@ -104,14 +104,14 @@ describe('App', () => {
         return Promise.resolve()
       }),
       env,
-      report: goodCoverageReport,
+      summaryReport: goodSummary,
     })
 
     expect(createComment).not.toHaveBeenCalled()
   })
 
   it('should remove previous coverage comments', async () => {
-    await every(reports, async (report) => {
+    await every(summaryReports, async (summaryReport) => {
       const test = jest.fn()
 
       await run({
@@ -127,7 +127,7 @@ describe('App', () => {
             return Promise.resolve()
           }),
         env,
-        report,
+        summaryReport,
       })
 
       expect(test).toHaveBeenCalledWith(1)
@@ -137,7 +137,7 @@ describe('App', () => {
   })
 
   it('should not remove comments only with commentType: "coverage-report"', async () => {
-    await every(reports, async (report) => {
+    await every(summaryReports, async (summaryReport) => {
       const test = jest.fn()
 
       await run({
@@ -154,7 +154,7 @@ describe('App', () => {
             return Promise.resolve()
           }),
         env,
-        report,
+        summaryReport,
       })
 
       expect(test).toHaveBeenCalledWith(1)
@@ -167,20 +167,20 @@ describe('App', () => {
   it('should leave comment when coverage is below 100%', async () => {
     expect.assertions(2)
 
-    await every(reports, async (report) => {
+    await every(summaryReports, async (summaryReport) => {
       await run({
         octokit: octokit.extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', (data) => {
           expect(data).toMatchSnapshot()
           return Promise.resolve()
         }),
         env,
-        report,
+        summaryReport,
       })
     })
   })
 
   it('should exit with message when executed not inside PR', async () => {
-    await every(reports, async (report) => {
+    await every(summaryReports, async (summaryReport) => {
       await every(['false', ''], async (TRAVIS_PULL_REQUEST) => {
         const effects = await run({
           octokit,
@@ -188,7 +188,7 @@ describe('App', () => {
             ...env,
             TRAVIS_PULL_REQUEST,
           },
-          report,
+          summaryReport,
         })
 
         expect(effects.log).toEqual(['Not a pull request. Exit'])
