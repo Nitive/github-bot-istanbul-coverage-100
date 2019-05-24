@@ -22,11 +22,12 @@ const env = {
 }
 
 const summaryReportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-summary.json')
+const coverageReportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-final.json')
 
 run({
   env,
-  // eslint-disable-next-line import/no-dynamic-require
-  summaryReport: require(summaryReportPath),
+  summaryReport: require(summaryReportPath), // eslint-disable-line import/no-dynamic-require
+  coverageReport: require(coverageReportPath), // eslint-disable-line import/no-dynamic-require
   octokit: { App, request },
 })
   .then((effects) => {

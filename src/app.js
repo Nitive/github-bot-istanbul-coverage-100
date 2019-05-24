@@ -75,13 +75,6 @@ exports.run = async ({
       title: status.description,
       summary: formatReport(summaryReport),
       annotations,
-      // annotations: [{
-      //   path: 'README.md',
-      //   start_line: 1,
-      //   end_line: 1,
-      //   annotation_level: 'warning',
-      //   message: 'Line is not covered',
-      // }],
     },
     headers: {
       Accept: 'application/vnd.github.antiope-preview+json',
