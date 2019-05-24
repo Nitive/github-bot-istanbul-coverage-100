@@ -1,6 +1,8 @@
 const { run } = require('../app')
 const { baseOctokit } = require('./octokit')
 
+const badCoverage = require('./__fixtures__/bad-coverage-final.json')
+
 const octokit = baseOctokit
   .extend('POST /repos/:owner/:repo/check-runs', () => Promise.resolve())
   .extend('GET /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve({ data: [] }))
@@ -11,6 +13,7 @@ const env = {
   TRAVIS_PULL_REQUEST: '1',
   TRAVIS_PULL_REQUEST_SHA: 'sha',
   TRAVIS_PULL_REQUEST_SLUG: 'owner/repo',
+  TRAVIS_BUILD_DIR: '/baseDir',
 }
 
 const badSummary = {
@@ -70,6 +73,7 @@ describe('App', () => {
       }),
       env,
       summaryReport: badSummary,
+      coverageReport: badCoverage,
     })
   })
 
@@ -193,6 +197,21 @@ describe('App', () => {
 
         expect(effects.log).toEqual(['Not a pull request. Exit'])
       })
+    })
+  })
+
+  it('should annotate uncovered statements', async () => {
+    expect.assertions(1)
+
+    await run({
+      octokit: octokit.extend('POST /repos/:owner/:repo/check-runs', (result) => {
+        expect(result.output.annotations).toMatchSnapshot()
+
+        return Promise.resolve()
+      }),
+      env,
+      summaryReport: badSummary,
+      coverageReport: badCoverage,
     })
   })
 })

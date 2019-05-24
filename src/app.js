@@ -1,5 +1,6 @@
 const { createApp } = require('./github')
 const { formatReport, formatStatus } = require('./report')
+const { getAnnotations } = require('./uncovered')
 
 async function removeCoverageComments({ app, config }) {
   const { data: comments } = await app.request('GET /repos/:owner/:repo/issues/:issueNumber/comments', {
@@ -33,11 +34,12 @@ function createConfig({ env }) {
     githubAppPrivateKey: env.GITHUB_APP_PRIVATE_KEY,
     owner,
     repo,
+    baseDir: env.TRAVIS_BUILD_DIR,
   }
 }
 
 exports.run = async ({
-  summaryReport, octokit, env,
+  summaryReport, octokit, env, coverageReport,
 }) => {
   const config = createConfig({ env })
   if (!config.isPR) {
@@ -46,6 +48,9 @@ exports.run = async ({
     })
   }
 
+  const annotations = coverageReport
+    ? getAnnotations({ report: coverageReport, config })
+    : []
   const app = await createApp({
     octokit,
     config,
@@ -61,6 +66,7 @@ exports.run = async ({
     output: {
       title: status.description,
       summary: formatReport(summaryReport),
+      annotations,
       // annotations: [{
       //   path: 'README.md',
       //   start_line: 1,

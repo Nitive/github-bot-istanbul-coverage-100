@@ -18,6 +18,7 @@ const env = {
   TRAVIS_PULL_REQUEST: process.env.TRAVIS_PULL_REQUEST,
   TRAVIS_PULL_REQUEST_SHA: process.env.TRAVIS_PULL_REQUEST_SHA || execSync('git rev-parse HEAD || true', { encoding: 'utf8' }).trim(),
   TRAVIS_PULL_REQUEST_SLUG: process.env.TRAVIS_PULL_REQUEST_SLUG,
+  TRAVIS_BUILD_DIR: process.env.TRAVIS_BUILD_DIR,
 }
 
 const summaryReportPath = path.join(process.env.TRAVIS_BUILD_DIR, 'coverage/coverage-summary.json')
