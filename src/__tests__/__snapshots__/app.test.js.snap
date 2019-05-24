@@ -1,5 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`App should annotate uncovered statements 1`] = `
+Array [
+  Array [
+    Object {
+      "annotation_level": "warning",
+      "end_column": 21,
+      "end_line": 41,
+      "message": "Statement is not covered",
+      "path": "src/app.js",
+      "start_column": 2,
+      "start_line": 41,
+    },
+    Object {
+      "annotation_level": "warning",
+      "end_column": 10,
+      "end_line": 58,
+      "message": "Statement is not covered",
+      "path": "src/app.js",
+      "start_column": 4,
+      "start_line": 58,
+    },
+  ],
+  Array [
+    Object {
+      "annotation_level": "warning",
+      "end_column": 37,
+      "end_line": 2,
+      "message": "Statement is not covered",
+      "path": "src/uncovered.js",
+      "start_column": 16,
+      "start_line": 2,
+    },
+    Object {
+      "annotation_level": "warning",
+      "end_column": 22,
+      "end_line": 4,
+      "message": "Statement is not covered",
+      "path": "src/uncovered.js",
+      "start_column": 17,
+      "start_line": 4,
+    },
+    Object {
+      "annotation_level": "warning",
+      "end_column": 15,
+      "end_line": 6,
+      "message": "Statement is not covered",
+      "path": "src/uncovered.js",
+      "start_column": 2,
+      "start_line": 6,
+    },
+  ],
+]
+`;
+
 exports[`App should leave comment when coverage is below 100% 1`] = `
 Object {
   "body": "<!-- commentType: \\"coverage-report\\" -->

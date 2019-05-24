@@ -2,7 +2,7 @@ module.exports = {
   verbose: true,
   testMatch: ['**/*test.js'],
   collectCoverageFrom: ['**/*.js'],
-  coverageReporters: ['json-summary', 'text'],
+  coverageReporters: ['json-summary', 'json', 'text', 'lcov'],
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/coverage/',
