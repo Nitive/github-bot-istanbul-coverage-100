@@ -16,12 +16,14 @@ function getUncoveredBranches(files) {
     .map(file => ({
       filePath: file.path,
       uncovered: _.toPairs(file.b)
-        .map(([id, [ifRunsCount, elseRunsCount]]) => [
-          ifRunsCount === 0 && { type: 0, id },
-          elseRunsCount === 0 && { type: 1, id },
-        ].filter(Boolean))
+        .map(([id, branches]) => branches
+          .map((branch, index) => branch === 0 && { type: index, id })
+          .filter(Boolean))
         .reduce((acc, arr) => acc.concat(arr), [])
-        .map(({ id, type }) => file.branchMap[id].locations[type]),
+        .map(({ id, type }) => ({
+          ...file.branchMap[id].locations[type],
+          type: file.branchMap[id].type,
+        })),
     }))
     .filter(row => row.uncovered.length > 0)
 }
@@ -54,8 +56,8 @@ function getFunctionName(err) {
   return err.name[0] === '(' ? undefined : err.name
 }
 
-function formatFunctionAnnotation(statements) {
-  return _.flatMap(statements, file => file.uncovered.map((err) => {
+function formatFunctionAnnotation(functions) {
+  return _.flatMap(functions, file => file.uncovered.map((err) => {
     const fnName = getFunctionName(err)
 
     return {
@@ -68,12 +70,22 @@ function formatFunctionAnnotation(statements) {
   }))
 }
 
+function formatBranchAnnotation(statements) {
+  return _.flatMap(statements, file => file.uncovered.map(err => ({
+    path: file.filePath,
+    annotation_level: 'warning',
+    message: `Branch is not covered (${err.type})`,
+    start_line: err.start.line,
+    end_line: err.end.line,
+  })))
+}
+
 exports.getAnnotations = ({ report, config }) => {
-  const { statements, functions } = getUncoveredCode(report, { config })
+  const { statements, functions, branches } = getUncoveredCode(report, { config })
 
   return [
     ...formatStatementAnnotation(statements),
     ...formatFunctionAnnotation(functions),
-    // ...formatStatementAnnotation(functions.map()),
+    ...formatBranchAnnotation(branches),
   ]
 }
