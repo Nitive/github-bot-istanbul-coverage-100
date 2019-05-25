@@ -162,8 +162,6 @@ describe('App', () => {
       })
 
       expect(test).toHaveBeenCalledWith(1)
-      expect(test).not.toHaveBeenCalledWith(2)
-      expect(test).not.toHaveBeenCalledWith(3)
       expect(test).toHaveBeenCalledTimes(1)
     })
   })
@@ -200,7 +198,7 @@ describe('App', () => {
     })
   })
 
-  it('should annotate uncovered statements', async () => {
+  it('should annotate uncovered code', async () => {
     expect.assertions(1)
 
     await run({
@@ -211,6 +209,21 @@ describe('App', () => {
       }),
       env,
       summaryReport: badSummary,
+      coverageReport: badCoverage,
+    })
+  })
+
+  it.skip('should not annotate 100% covered code', async () => {
+    expect.assertions(1)
+
+    await run({
+      octokit: octokit.extend('POST /repos/:owner/:repo/check-runs', (result) => {
+        expect(result.output.annotations).toEqual([])
+
+        return Promise.resolve()
+      }),
+      env,
+      summaryReport: goodSummary,
       coverageReport: badCoverage,
     })
   })
