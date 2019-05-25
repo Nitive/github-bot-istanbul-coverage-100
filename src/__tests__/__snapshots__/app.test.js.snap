@@ -51,6 +51,13 @@ Array [
     "path": "src/uncovered.js",
     "start_line": 1,
   },
+  Object {
+    "annotation_level": "warning",
+    "end_line": 59,
+    "message": "Branch is not covered (if)",
+    "path": "src/app.js",
+    "start_line": 57,
+  },
 ]
 `;
 
