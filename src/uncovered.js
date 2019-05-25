@@ -26,8 +26,12 @@ function getUncoveredBranches(files) {
     .filter(row => row.uncovered.length > 0)
 }
 
-const getUncoveredCode = (report) => {
+function getUncoveredCode(report, { config }) {
   const files = Object.values(report)
+    .map(file => ({
+      ...file,
+      path: file.path.replace(`${config.baseDir}/`, ''),
+    }))
 
   return {
     statements: getUncovered(files, 's', 'statementMap'),
@@ -36,23 +40,40 @@ const getUncoveredCode = (report) => {
   }
 }
 
-exports.getAnnotations = ({ report, config }) => {
-  const { statements } = getUncoveredCode(report)
+function formatStatementAnnotation(statements) {
+  return _.flatMap(statements, file => file.uncovered.map(err => ({
+    path: file.filePath,
+    annotation_level: 'warning',
+    message: 'Statement is not covered',
+    start_line: err.start.line,
+    end_line: err.end.line,
+  })))
+}
 
+function getFunctionName(err) {
+  return err.name[0] === '(' ? undefined : err.name
+}
+
+function formatFunctionAnnotation(statements) {
   return _.flatMap(statements, file => file.uncovered.map((err) => {
-    const oneLine = err.start.line === err.end.line
-
-    const columns = oneLine
-      ? { start_column: err.start.column, end_column: err.end.column }
-      : {}
+    const fnName = getFunctionName(err)
 
     return {
-      path: file.filePath.replace(`${config.baseDir}/`, ''),
-      start_line: err.start.line,
-      end_line: err.end.line,
-      ...columns,
+      path: file.filePath,
       annotation_level: 'warning',
-      message: 'Statement is not covered',
+      message: `Function${fnName ? ` “${fnName}”` : ''} is not covered`,
+      start_line: err.loc.start.line,
+      end_line: err.loc.end.line,
     }
   }))
+}
+
+exports.getAnnotations = ({ report, config }) => {
+  const { statements, functions } = getUncoveredCode(report, { config })
+
+  return [
+    ...formatStatementAnnotation(statements),
+    ...formatFunctionAnnotation(functions),
+    // ...formatStatementAnnotation(functions.map()),
+  ]
 }
