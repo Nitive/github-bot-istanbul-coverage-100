@@ -6,6 +6,7 @@ const badCoverage = require('./__fixtures__/bad-coverage-final.json')
 const octokit = baseOctokit
   .extend('POST /repos/:owner/:repo/check-runs', () => Promise.resolve())
   .extend('GET /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve({ data: [] }))
+  .extend('GET /repos/:owner/:repo/pulls/:pullNumber/files', () => Promise.resolve({ data: [] }))
   .extend('POST /repos/:owner/:repo/issues/:issueNumber/comments', () => Promise.resolve())
   .extend('DELETE /repos/:owner/:repo/issues/comments/:commentId', () => Promise.resolve())
 
@@ -54,23 +55,27 @@ async function every(data, check) {
 }
 
 describe('App', () => {
-  it('should set failed check when coverage is below 100%', async () => {
+  it('should set failed check when there are some uncovered code in PR', async () => {
     expect.assertions(3)
 
     await run({
-      octokit: octokit.extend('POST /repos/:owner/:repo/check-runs', (result) => {
-        expect(result).toMatchObject({
-          name: 'Coverage',
-          conclusion: 'failure',
-          status: 'completed',
-        })
-        expect(result.output).toMatchObject({
-          title: '💔 below 100%',
-        })
-        expect(result.output.summary).toMatchSnapshot()
+      octokit: octokit
+        .extend('POST /repos/:owner/:repo/check-runs', (result) => {
+          expect(result).toMatchObject({
+            name: 'Coverage',
+            conclusion: 'failure',
+            status: 'completed',
+          })
+          expect(result.output).toMatchObject({
+            title: '💔 PR contains uncovered code',
+          })
+          expect(result.output.summary).toMatchSnapshot()
 
-        return Promise.resolve()
-      }),
+          return Promise.resolve()
+        })
+        .extend('GET /repos/:owner/:repo/pulls/:pullNumber/files', () => Promise.resolve({
+          data: [{ filename: 'src/app.js' }],
+        })),
       env,
       summaryReport: badSummary,
       coverageReport: badCoverage,
@@ -140,7 +145,7 @@ describe('App', () => {
     })
   })
 
-  it('should not remove comments only with commentType: "coverage-report"', async () => {
+  it('should remove only comments with commentType: "coverage-report"', async () => {
     await every(summaryReports, async (summaryReport) => {
       const test = jest.fn()
 
@@ -166,7 +171,7 @@ describe('App', () => {
     })
   })
 
-  it('should leave comment when coverage is below 100%', async () => {
+  it.skip('should leave comment when coverage is below 100%', async () => {
     expect.assertions(2)
 
     await every(summaryReports, async (summaryReport) => {
@@ -202,11 +207,15 @@ describe('App', () => {
     expect.assertions(1)
 
     await run({
-      octokit: octokit.extend('POST /repos/:owner/:repo/check-runs', (result) => {
-        expect(result.output.annotations).toMatchSnapshot()
+      octokit: octokit
+        .extend('POST /repos/:owner/:repo/check-runs', (result) => {
+          expect(result.output.annotations).toMatchSnapshot()
 
-        return Promise.resolve()
-      }),
+          return Promise.resolve()
+        })
+        .extend('GET /repos/:owner/:repo/pulls/:pullNumber/files', () => Promise.resolve({
+          data: [{ filename: 'src/app.js' }, { filename: 'src/uncovered.js' }],
+        })),
       env,
       summaryReport: badSummary,
       coverageReport: badCoverage,

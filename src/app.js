@@ -16,12 +16,12 @@ async function removeCoverageComments({ app, config }) {
   }))
 }
 
-async function addCoverageComment({ app, config, summaryReport }) {
-  await app.request('POST /repos/:owner/:repo/issues/:issueNumber/comments', {
-    issueNumber: config.pullRequestNumber,
-    body: formatReport(summaryReport),
-  })
-}
+// async function addCoverageComment({ app, config, summaryReport }) {
+//   await app.request('POST /repos/:owner/:repo/issues/:issueNumber/comments', {
+//     issueNumber: config.pullRequestNumber,
+//     body: formatReport(summaryReport),
+//   })
+// }
 
 function createConfig({ env }) {
   const [owner, repo] = env.TRAVIS_PULL_REQUEST_SLUG.split('/')
@@ -38,8 +38,12 @@ function createConfig({ env }) {
   }
 }
 
-function uncovered() {
-  console.log('this is uncovered line')
+async function getPullRequestFiles({ app, config }) {
+  const { data } = await app.request('GET /repos/:owner/:repo/pulls/:pullNumber/files', {
+    pullNumber: config.pullRequestNumber,
+  })
+
+  return data.map(file => file.filename)
 }
 
 exports.run = async ({
@@ -52,18 +56,17 @@ exports.run = async ({
     })
   }
 
-  if (config.repo === 'test') {
-    uncovered()
-  }
-
-  const annotations = coverageReport
-    ? getAnnotations({ report: coverageReport, config })
-    : []
   const app = await createApp({
     octokit,
     config,
   })
-  const status = formatStatus(summaryReport)
+
+  const prFiles = await getPullRequestFiles({ app, config })
+  const annotations = coverageReport
+    ? getAnnotations({ report: coverageReport, config, prFiles })
+    : []
+
+  const status = formatStatus({ summaryReport, annotations })
 
   await app.request('POST /repos/:owner/:repo/check-runs', {
     name: 'Coverage',
@@ -82,9 +85,9 @@ exports.run = async ({
   })
 
   await removeCoverageComments({ app, config })
-  if (status.conclusion !== 'success') {
-    await addCoverageComment({ app, config, summaryReport })
-  }
+  // if (status.conclusion !== 'success') {
+  //   await addCoverageComment({ app, config, summaryReport })
+  // }
 
   return {}
 }
