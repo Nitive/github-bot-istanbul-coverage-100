@@ -1,6 +1,6 @@
 {
   "name": "@nitive/github-bot-istanbul-coverage-100",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.js",
   "bin": {
     "github-bot-istanbul-coverage-100": "./src/bin.js"
