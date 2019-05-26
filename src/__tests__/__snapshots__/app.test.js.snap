@@ -103,7 +103,7 @@ Lines | 💔 \`95.00%\`",
 }
 `;
 
-exports[`App should set failed check when coverage is below 100% 1`] = `
+exports[`App should set failed check when there are some uncovered code in PR 1`] = `
 "<!-- commentType: \\"coverage-report\\" -->
 ### 💔 Coverage report
 

@@ -49,11 +49,11 @@ exports.formatReport = (report) => {
   ].join('\n')
 }
 
-exports.formatStatus = (report) => {
-  const currentStats = getStats(report)
-  const status = getReportStatus({ currentStats })
+exports.formatStatus = ({ annotations }) => {
+  // const currentStats = getStats(report)
+  // const status = getReportStatus({ currentStats })
 
-  if (status === 'positive') {
+  if (annotations.length === 0) {
     return {
       conclusion: 'success',
       description: '💚 Everything is covered',
@@ -62,6 +62,6 @@ exports.formatStatus = (report) => {
 
   return {
     conclusion: 'failure',
-    description: '💔 below 100%',
+    description: '💔 PR contains uncovered code',
   }
 }

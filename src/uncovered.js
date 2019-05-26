@@ -80,12 +80,12 @@ function formatBranchAnnotation(statements) {
   })))
 }
 
-exports.getAnnotations = ({ report, config }) => {
+exports.getAnnotations = ({ report, config, prFiles }) => {
   const { statements, functions, branches } = getUncoveredCode(report, { config })
 
   return [
     ...formatStatementAnnotation(statements),
     ...formatFunctionAnnotation(functions),
     ...formatBranchAnnotation(branches),
-  ]
+  ].filter(annotation => prFiles.includes(annotation.path))
 }
