@@ -44,6 +44,7 @@ function getUncoveredCode(report, { config }) {
 
 function formatStatementAnnotation(statements) {
   return _.flatMap(statements, file => file.uncovered.map(err => ({
+    type: 'statement',
     path: file.filePath,
     annotation_level: 'warning',
     message: 'Statement is not covered',
@@ -61,6 +62,7 @@ function formatFunctionAnnotation(functions) {
     const fnName = getFunctionName(err)
 
     return {
+      type: 'function',
       path: file.filePath,
       annotation_level: 'warning',
       message: `Function${fnName ? ` “${fnName}”` : ''} is not covered`,
@@ -72,6 +74,7 @@ function formatFunctionAnnotation(functions) {
 
 function formatBranchAnnotation(statements) {
   return _.flatMap(statements, file => file.uncovered.map(err => ({
+    type: 'branch',
     path: file.filePath,
     annotation_level: 'warning',
     message: `Branch is not covered (${err.type})`,
@@ -80,12 +83,34 @@ function formatBranchAnnotation(statements) {
   })))
 }
 
+function removeNestedAnnotations(annotations) {
+  function isInside(a1, a2) { // a1 inside a2
+    return a1.start_line >= a2.start_line && a1.end_line <= a2.end_line
+  }
+
+  function isSame(a1, a2) {
+    return a1.start_line === a2.start_line && a1.end_line === a2.end_line
+  }
+
+  return _.flow(
+    arr => arr.reduce(
+      (acc, a1) => _.reject(acc, a2 => isInside(a2, a1) && !isSame(a1, a2)),
+      arr,
+    ),
+    arr => _.uniqWith(arr, isSame),
+  )(annotations)
+}
+
 exports.getAnnotations = ({ report, config, prFiles }) => {
   const { statements, functions, branches } = getUncoveredCode(report, { config })
 
-  return [
-    ...formatStatementAnnotation(statements),
-    ...formatFunctionAnnotation(functions),
-    ...formatBranchAnnotation(branches),
-  ].filter(annotation => prFiles.includes(annotation.path))
+  return removeNestedAnnotations(
+    [
+      ...formatStatementAnnotation(statements),
+      ...formatFunctionAnnotation(functions),
+      ...formatBranchAnnotation(branches),
+    ]
+      .filter(annotation => prFiles.includes(annotation.path))
+      .map(({ type, ...an }) => an),
+  )
 }

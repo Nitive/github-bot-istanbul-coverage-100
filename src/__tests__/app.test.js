@@ -2,6 +2,7 @@ const { run } = require('../app')
 const { baseOctokit } = require('./octokit')
 
 const badCoverage = require('./__fixtures__/bad-coverage-final.json')
+const nestedCoverage = require('./__fixtures__/nested-uncovered-final.json')
 
 const octokit = baseOctokit
   .extend('POST /repos/:owner/:repo/check-runs', () => Promise.resolve())
@@ -209,7 +210,29 @@ describe('App', () => {
     await run({
       octokit: octokit
         .extend('POST /repos/:owner/:repo/check-runs', (result) => {
-          expect(result.output.annotations).toMatchSnapshot()
+          expect(result.output.annotations).toEqual([
+            {
+              annotation_level: 'warning',
+              end_line: 42,
+              message: 'Function “test” is not covered',
+              path: 'src/app.js',
+              start_line: 40,
+            },
+            {
+              annotation_level: 'warning',
+              end_line: 7,
+              message: 'Function is not covered',
+              path: 'src/uncovered.js',
+              start_line: 1,
+            },
+            {
+              annotation_level: 'warning',
+              end_line: 59,
+              message: 'Branch is not covered (if)',
+              path: 'src/app.js',
+              start_line: 57,
+            },
+          ])
 
           return Promise.resolve()
         })
@@ -219,6 +242,45 @@ describe('App', () => {
       env,
       summaryReport: badSummary,
       coverageReport: badCoverage,
+    })
+  })
+
+  it('should annotate uncovered code 2', async () => {
+    expect.assertions(1)
+
+    await run({
+      octokit: octokit
+        .extend('POST /repos/:owner/:repo/check-runs', (result) => {
+          expect(result.output.annotations).toEqual([{
+            path: 'src/uncovered.js',
+            annotation_level: 'warning',
+            message: 'Statement is not covered',
+            start_line: 90,
+            end_line: 90,
+          },
+          {
+            path: 'src/uncovered.js',
+            annotation_level: 'warning',
+            message: 'Function “getBestAlternative” is not covered',
+            start_line: 86,
+            end_line: 88,
+          },
+          {
+            path: 'src/uncovered.js',
+            annotation_level: 'warning',
+            message: 'Branch is not covered (if)',
+            start_line: 110,
+            end_line: 113,
+          }])
+
+          return Promise.resolve()
+        })
+        .extend('GET /repos/:owner/:repo/pulls/:pullNumber/files', () => Promise.resolve({
+          data: [{ filename: 'src/uncovered.js' }],
+        })),
+      env,
+      summaryReport: badSummary,
+      coverageReport: nestedCoverage,
     })
   })
 
